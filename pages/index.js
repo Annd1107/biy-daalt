@@ -4,6 +4,7 @@ import Image from "next/image";
 import Header from "./components/header";
 import Footer from "./components/footer";
 import Marquee from "react-fast-marquee";
+import Link from "next/link";
 
 export default function Home() {
   const [bottomRow, setBottomRow] = useState([]);
@@ -30,19 +31,25 @@ export default function Home() {
       <Header />
 
       <div className="flex gap-6 p-30 h-[calc(100vh-80px)]">
-        <div className="relative w-2/3 bg-black rounded-md overflow-hidden">
-          <Image
-            src={products[0].src}
-            alt={products[0].name}
-            fill
-            className="object-contain transition duration-300 ease-in-out hover:scale-105"
-            sizes="(min-width: 1024px) 66vw, 100vw"
-            priority
-          />
-          <div className="absolute bottom-4 left-4 bg-black/70 px-3 py-1 rounded text-sm">
-            {products[0].name} — {products[0].price}
-          </div>
-        </div>
+          <Link href="/darhad" className="relative w-2/3 h-full bg-black rounded-md overflow-hidden">
+            <Image
+              src={products[0].src}
+              alt={products[0].name}
+              fill
+              className="object-contain transition duration-300 ease-in-out hover:scale-105"
+              sizes="(min-width: 1024px) 66vw, 100vw"
+              priority
+            />
+            <div className="absolute bottom-4 left-4 bg-black/70 px-3 py-1 rounded text-sm flex flex-row items-center gap-3">
+              <p>
+                {products[0].name}
+              </p> 
+              <p className="bg-blue-800 w-16 rounded-xl p-2">
+                {products[0].price}
+              </p>
+            </div>
+
+        </Link>
 
         <div className="flex flex-col justify-between w-1/3 gap-6">
           {[products[1], products[2]].map((product) => (
@@ -58,9 +65,14 @@ export default function Home() {
                 sizes="(min-width: 768px) 33vw, 100vw"
                 priority
               />
-              <div className="absolute bottom-4 left-4 bg-black/70 px-3 py-1 rounded text-sm">
-                {product.name} — {product.price}
-              </div>
+              <div className="absolute bottom-4 left-4 bg-black/70 px-3 py-1 rounded text-sm flex flex-row items-center gap-3">
+              <p>
+                {product.name}
+              </p> 
+              <p className="bg-blue-800 w-16 rounded-xl p-2">
+                {product.price}
+              </p>
+            </div>
             </div>
           ))}
         </div>
@@ -70,7 +82,7 @@ export default function Home() {
         {bottomRow.map((product) => (
           <div
             key={product.id}
-            className="relative h-150 w-150 bg-black rounded-md overflow-hidden m-10 flex-shrink-0 w-64 h-64 snap-center"
+            className="relative h-100 w-180 bg-black rounded-md overflow-hidden m-10 flex-shrink-0 w-64 h-64 snap-center"
           >
             <Image
               src={product.src}
@@ -78,13 +90,18 @@ export default function Home() {
               fill
               className="h-150 object-contain transition duration-300 ease-in-out hover:scale-105"
             />
-            <div className="absolute bottom-4 left-4 bg-black/70 px-3 py-1 rounded text-sm">
-              {product.name} — {product.price}
+           <div className="absolute bottom-4 left-4 bg-black/70 px-3 py-1 rounded text-sm flex flex-row items-center gap-3">
+              <p>
+                {product.name}
+              </p> 
+              <p className="bg-blue-800 w-16 rounded-xl p-2">
+                {product.price}
+              </p>
             </div>
           </div>
         ))}
       </Marquee>
-      <Footer/>
+      <Footer />
     </div>
   );
 }
