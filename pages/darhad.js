@@ -1,8 +1,32 @@
-import React from "react";
+import React, { useState } from "react";
+import Image from "next/image";
 import Header from "./components/header";
 import Footer from "./components/footer";
 
+
+
 export default function ProductPage() {
+  const [selectedColor, setSelectedColor] = useState("Black");
+  const [selectedSize, setSelectedSize] = useState("");
+  const [quantity, setQuantity] = useState(1);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+
+  const productImages = [
+    "https://cdn.shopify.com/s/files/1/0754/3727/7491/files/t-shirt-1.png?v=1689798965",
+    "https://cdn.shopify.com/s/files/1/0754/3727/7491/files/t-shirt-1.png?v=1689798965",
+    "https://cdn.shopify.com/s/files/1/0754/3727/7491/files/t-shirt-1.png?v=1689798965"
+  ];
+
+  const colors = [
+    { name: "Black", available: true },
+    { name: "White", available: true },
+    { name: "Blue", available: false }
+  ];
+
+  const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
+
   const products = [
     { id: 1, src: "https://cdn.shopify.com/s/files/1/0754/3727/7491/files/t-shirt-1.png?v=1689798965", name: "Acme Circles T-Shirt", price: "$20.00" },
     { id: 2, src: "https://cdn.shopify.com/s/files/1/0754/3727/7491/files/bag-1-dark.png?v=1689796304", name: "Acme Drawstring Bag", price: "$12.00" },
@@ -16,9 +40,37 @@ export default function ProductPage() {
     { id: 10, src: "https://cdn.shopify.com/s/files/1/0754/3727/7491/files/t-shirt-1.png?v=1689798965", name: "Acme Rainbow Sticker", price: "$4.00" },
   ];
 
+  const handleQuantityChange = (delta) => {
+    const newQty = quantity + delta;
+    if (newQty >= 1 && newQty <= 99) {
+      setQuantity(newQty);
+      setError("");
+    }
+  };
+
+  const handleAddToCart = () => {
+    if (!selectedColor) {
+      setError("Ungu Songo");
+      return;
+    }
+    if (!selectedSize) {
+      setError("Size Songo");
+      return;
+    }
+    
+    const selectedColorObj = colors.find(c => c.name === selectedColor);
+    if (selectedColorObj && !selectedColorObj.available) {
+      setError(`${selectedColor} is currently out of stock`);
+      return;
+    }
+
+    setError("");
+    setSuccessMessage(`Cartnd nemsen: ${quantity}x Acme Geometric Circles T-Shirt - Color: ${selectedColor}, Size: ${selectedSize} - Total: ${(20 * quantity).toFixed(2)}`);
+    setTimeout(() => setSuccessMessage(""), 5000);
+  };
   return (
     <div className="min-h-screen bg-[#0b0b0b] text-gray-200 font-sans">
-        <Header />
+      <Header/>
       <div className="w-max-screen grid grid-cols-12 gap-8">
 
         <div className="col-span-7 bg-[#0b0b0b] p-6 rounded-md">
@@ -26,31 +78,26 @@ export default function ProductPage() {
             <div className="flex items-start gap-6">
               <div className="w-3/4 flex justify-center items-center">
 
-                <div className="relative w-96 h-96 bg-gradient-to-b from-black to-[#050505] rounded-md flex items-center justify-center">
+                <div className="relative w-196 h-196 bg-gradient-to-b from-black to-[#050505] rounded-md flex items-center justify-center">
                   <img
-                    src="https://cdn.shopify.com/s/files/1/0754/3727/7491/files/t-shirt-1.png?v=1689798965"
+                    src={productImages[currentImageIndex]}
                     alt="tshirt"
-                    className="max-w-full max-h-full object-contain drop-shadow-lg"
+                    className="max-w-150 max-h-full object-contain drop-shadow-lg"
                   />
-
-                  <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex gap-4">
-                    <button className="w-10 h-10 bg-[#111] rounded-full flex items-center justify-center opacity-80 hover:opacity-100">◀</button>
-                    <button className="w-10 h-10 bg-[#111] rounded-full flex items-center justify-center opacity-80 hover:opacity-100">▶</button>
-                  </div>
                 </div>
               </div>
             </div>
 
             <div className="mt-6 flex gap-4 items-center justify-center">
-              <button className="w-16 h-16 rounded-md border-2 border-[#1f2937] bg-[#0b0b0b] flex items-center justify-center">
-                <div className="w-12 h-12 bg-gray-800 rounded-sm"></div>
-              </button>
-              <button className="w-16 h-16 rounded-md border-2 border-[#1f2937] bg-[#0b0b0b] flex items-center justify-center">
-                <div className="w-12 h-12 bg-white rounded-sm"></div>
-              </button>
-              <button className="w-16 h-16 rounded-md border-2 border-[#1f2937] bg-[#0b0b0b] flex items-center justify-center">
-                <div className="w-12 h-12 bg-blue-500 rounded-sm"></div>
-              </button>
+              {productImages.map((img, idx) => (
+                <button 
+                  key={idx}
+                  onClick={() => setCurrentImageIndex(idx)}
+                  className="w-16 h-16 rounded-md border-2 border-[#1f2937] bg-[#0b0b0b] flex items-center justify-center"
+                >
+                  <div className={`w-12 h-12 rounded-sm ${idx === 0 ? 'bg-gray-800' : idx === 1 ? 'bg-white' : 'bg-blue-500'}`}></div>
+                </button>
+              ))}
             </div>
           </div>
         </div>
@@ -59,20 +106,49 @@ export default function ProductPage() {
           <h1 className="text-3xl font-bold mb-2">Acme Geometric Circles T-Shirt</h1>
           <div className="text-[#3c76d6] font-semibold mb-6">$20.00 USD</div>
 
+          {error && (
+            <div className="mb-4 p-3 bg-red-900/30 border border-red-700 rounded text-red-300 text-sm">
+              {error}
+            </div>
+          )}
+
+          {successMessage && (
+            <div className="mb-4 p-3 bg-green-900/30 border border-green-700 rounded text-green-300 text-sm">
+              {successMessage}
+            </div>
+          )}
+
           <div className="mb-4">
             <div className="text-sm uppercase mb-2 text-gray-400">Color</div>
             <div className="flex gap-3">
-              <button className="px-3 py-1 rounded-full bg-[#111] border border-[#222]">Black</button>
-              <button className="px-3 py-1 rounded-full bg-[#111] border border-[#222]">White</button>
-              <button className="px-3 py-1 rounded-full bg-[#111] border border-[#222] opacity-60">Blue</button>
+              {colors.map((color) => (
+                <button
+                  key={color.name}
+                  onClick={() => color.available && setSelectedColor(color.name)}
+                  className={`px-3 py-1 rounded-full bg-[#111] border border-[#222] ${
+                    !color.available ? 'opacity-60' : ''
+                  } ${selectedColor === color.name ? 'ring-2 ring-blue-500' : ''}`}
+                  disabled={!color.available}
+                >
+                  {color.name}
+                </button>
+              ))}
             </div>
           </div>
 
           <div className="mb-6">
-            <div className="text-sm uppercase mb-2 text-gray-400">Size</div>
+            <div className="text-sm uppercase text-gray-400">Size</div>
             <div className="flex flex-wrap gap-3">
-              {['XS','S','M','L','XL','XXL','XXXL'].map(sz => (
-                <button key={sz} className="px-3 py-1 rounded-full bg-[#111] border border-[#222] text-sm">{sz}</button>
+              {sizes.map(sz => (
+                <button 
+                  key={sz} 
+                  onClick={() => setSelectedSize(sz)}
+                  className={`px-3 py-1 rounded-full bg-[#111] border border-[#222] text-sm ${
+                    selectedSize === sz ? 'ring-2 ring-blue-500' : ''
+                  }`}
+                >
+                  {sz}
+                </button>
               ))}
             </div>
           </div>
@@ -81,11 +157,26 @@ export default function ProductPage() {
 
           <div className="flex items-center gap-4">
             <div className="flex items-center bg-[#0f1724] rounded-full px-3 py-2">
-              <button className="w-8 h-8 rounded-full border border-[#222]">-</button>
-              <div className="px-4">1</div>
-              <button className="w-8 h-8 rounded-full border border-[#222]">+</button>
+              <button 
+                onClick={() => handleQuantityChange(-1)}
+                className="w-8 h-8 rounded-full border border-[#222]"
+              >
+                -
+              </button>
+              <div className="px-4">{quantity}</div>
+              <button 
+                onClick={() => handleQuantityChange(1)}
+                className="w-8 h-8 rounded-full border border-[#222]"
+              >
+                +
+              </button>
             </div>
-            <button className="flex-1 bg-[#254bb8] hover:bg-[#2e59d0] rounded-full py-3 text-white font-semibold">Add To Cart</button>
+            <button 
+              onClick={handleAddToCart}
+              className="flex-1 bg-[#254bb8] hover:bg-[#2e59d0] rounded-full py-3 text-white font-semibold"
+            >
+              Add To Cart
+            </button>
           </div>
           <div style={{ height: 300 }} />
         </aside>
